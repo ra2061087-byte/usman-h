@@ -1,1 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
+  --font-serif: "Georgia", serif;
+  
+  --color-gold-start: #BF953F;
+  --color-gold-mid: #FCF6BA;
+  --color-gold-end: #AA771C;
+}
+
+body {
+  @apply bg-[#0A0A0A] text-[#E5E5E5] font-serif;
+}
+
+[dir="rtl"] {
+  font-family: var(--font-urdu), var(--font-serif);
+}
+
+.urdu-text {
+  font-family: var(--font-urdu);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(191, 149, 63, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.profile-arched {
+  border-radius: 70px 70px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-arched::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}

@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helpers
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // Student profile
+    match /students/{studentId} {
+      function isValidStudent(data) {
+        return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+               data.fatherName is string && data.fatherName.size() <= 100 &&
+               data.admissionDate is string &&
+               data.studentId == studentId;
+      }
+      allow read: if isAdmin() || isOwner(studentId);
+      allow create: if isAdmin() && isValidStudent(incoming());
+      allow update: if isAdmin() && isValidStudent(incoming()) && incoming().studentId == existing().studentId;
+      allow delete: if isAdmin();
+    }
+
+    // Academic Records
+    match /academic_records/{recordId} {
+      function isValidRecord(data) {
+        return data.studentId is string && data.date is string &&
+               exists(/databases/$(database)/documents/students/$(data.studentId));
+      }
+      allow read: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/students/$(resource.data.studentId)) && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isAdmin() && isValidRecord(incoming());
+    }
+
+    // Attendance
+    match /attendance/{attendanceId} {
+      allow read: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/students/$(resource.data.studentId)) && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Finance (Income & Expenses)
+    match /income/{incomeId} {
+      allow read, write: if isAdmin();
+    }
+    match /expenses/{expenseId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Admins
+    match /admins/{adminId} {
+      allow read: if isSignedIn(); // Allow checking if user is admin
+      allow write: if false; // Admins must be provisioned manually or via secure server
+    }
+  }
+}

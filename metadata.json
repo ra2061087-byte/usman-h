@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Jamia Management System",
+  "description": "A comprehensive, bilingual (Urdu/English) academy management system for Jamia Naqshbandia Barvi Rizvia, featuring student profiles, attendance, academic reports, and finance management.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
